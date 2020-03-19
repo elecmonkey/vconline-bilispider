@@ -33,7 +33,7 @@ def songs_data(aid):
     myClient = pymongo.MongoClient(config.DATABASE_URL)
     myDB = myClient[config.DATABASE_DATA]
     myCol = myDB["av" + str(aid)]
-    myDoc = myCol.find({}) .sort("time", -1)
+    myDoc = myCol.find({}).sort("time", -1)
     myDoc_r = ''
     myTimeD = 0
     i = 0
@@ -47,7 +47,7 @@ def songs_data(aid):
             break
         myDoc_r = myDoc_one
         myTimeD = myTimeDt
-
+    myClient.close()
     myDoc_r.pop("_id")
     res = Response(json.dumps(myDoc_r))
     res.headers.add("Access-Control-Allow-Origin", "*")

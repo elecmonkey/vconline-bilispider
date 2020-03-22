@@ -71,7 +71,7 @@ class Video:
         if method == 0 and self.__caching['getVideoData'] != '':
             return self.__caching['getVideoData']
         try:
-            JsonData = self.__getHttpPage("http://api.bilibili.com/archive_stat/stat?aid=" + str(self.__aid))
+            JsonData = getHttpPage("http://api.bilibili.com/archive_stat/stat?aid=" + str(self.__aid))
             DicData = json.loads(JsonData)
             ReData = {
                 "error" : 0,
@@ -95,7 +95,7 @@ class Video:
             return self.__caching['getVideoTag']
         # 获取视频所有Tag
         try:
-            JsonData = self.__getHttpPage("http://api.bilibili.com/x/tag/archive/tags?aid=" + str(self.__aid))
+            JsonData = getHttpPage("http://api.bilibili.com/x/tag/archive/tags?aid=" + str(self.__aid))
             DicData = json.loads(JsonData)['data']
             ReData = {"error": 0}
             for DicData_Key in DicData:
@@ -109,29 +109,33 @@ class Video:
 
 class Folder:
     __fid = 0
-    __caching = { }
+    __caching = {'getFolder': ''}
 
-    def getFolder(self, method = 0):
+    def __init__(self, fid):
+        self.__fid = fid
+    def setAid(self, fid):
+        self.__fid = fid
+    def getAid(self, fid):
+        return self.__fid
+
+    def getFolder(self, page = 1, method = 0):
         # 获取收藏夹下所有视频
         if method == 0 and self.__caching['getFolder'] != '':
             return self.__caching['getFolder']
         try:
-            JsonData = self.__getHttpPage("https://api.bilibili.com/medialist/gateway/base/spaceDetail?media_id=" + str(self.__fid) + "&pn=1&ps=1&keyword=&order=mtime&type=0&tid=0&jsonp=jsonp")
+            JsonData = getHttpPage("https://api.bilibili.com/medialist/gateway/base/spaceDetail?media_id=" + str(self.__fid) + "&pn=" + str(page) + "&ps=20&keyword=&order=mtime&type=0&tid=0&jsonp=jsonp")
             DicData = json.loads(JsonData)
             FolderPage = math.ceil(int(DicData['data']['info']['media_count']) / 20)
-            ReData = {"error" : 0}
+            ReData = {"error": 0, 'page': FolderPage}
             VideoCount = 0
-            for iFolderPage in range(1, FolderPage + 1):
-                JsonData = self.__getHttpPage("https://api.bilibili.com/medialist/gateway/base/spaceDetail?media_id=" + str(self.__fid) + "&pn=" + str(iFolderPage) + "&ps=20&keyword=&order=mtime&type=0&tid=0&jsonp=jsonp")
-                DicData = json.loads(JsonData)
-                for DicData_key in DicData['data']['medias']:
-                    VideoCount = VideoCount + 1
-                    ReData[VideoCount] = DicData_key['id']
+            for DicData_key in DicData['data']['medias']:
+                VideoCount = VideoCount + 1
+                ReData[VideoCount] = DicData_key['id']
         except KeyError:
             ReData = {"error": 1}
         except:
             ReData = {"error": 2}
-        self.__caching = ReData
+        self.__caching['getFolder'] = ReData
         return ReData
 
 class Upper:
@@ -198,7 +202,8 @@ class Upper:
 
     def getUpperRelationstat(self, method = 0):
         # 获取UP主关注人数、粉丝数
-        if method == 0 and self.__caching['getUpperRelationstat'] != ' '
+        if method == 0 and self.__caching['getUpperRelationstat'] != '':
+            pass
         try:
             JsonData = self.__getHttpPage("https://api.bilibili.com/x/relation/stat?vmid=" + str(self.Uid))
             DicData = json.loads(JsonData)

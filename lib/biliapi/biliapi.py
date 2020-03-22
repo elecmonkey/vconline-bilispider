@@ -10,20 +10,27 @@ import urllib.request
 import urllib.parse
 import math
 
-class BiliAPI:
-    Aid = 0
-    Uid = 0
-    Fid = 0
-    Keyword = ""
+def getHttpPage(url):
+    Headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE"}
+    return urllib.request.urlopen(urllib.request.Request(url=url, headers=Headers)).read().decode()
 
-    def __getHttpPage(self,url):
-        Headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE"}
-        return urllib.request.urlopen(urllib.request.Request(url=url, headers=Headers)).read().decode()
+class Video:
+    __aid = 0
+    __caching = { }
 
-    def getVideoInfo(self):
+    def __init__(self, aid):
+        self.__aid = aid
+    def setAid(self, aid):
+        self.__aid = aid
+    def getAid(self, aid):
+        return self.__aid
+
+    def getVideoInfo(self, method = 0):
         # 获取视频信息
+        if method == 0 and self.__caching['getVideoInfo'] != '':
+            return self.__caching['getVideoInfo'];
         try:
-            JsonData = self.__getHttpPage("http://api.bilibili.com/x/web-interface/view?aid=" + str(self.Aid))
+            JsonData = getHttpPage("http://api.bilibili.com/x/web-interface/view?aid=" + str(self.__aid))
             DicData = json.loads(JsonData)
             ReData = {
                 "error" : 0,
@@ -55,12 +62,15 @@ class BiliAPI:
             ReData = {"error": 1}
         except:
             ReData = {"error": 2}
+        self.__caching['getVideoInfo'] = ReData
         return ReData
 
-    def getVideoData(self):
+    def getVideoData(self, method = 0):
         # 获取视频实时数据
+        if method == 0 and self.__caching['getVideoData'] != '':
+            return self.__caching['getVideoData'];
         try:
-            JsonData = self.__getHttpPage("http://api.bilibili.com/archive_stat/stat?aid=" + str(self.Aid));
+            JsonData = self.__getHttpPage("http://api.bilibili.com/archive_stat/stat?aid=" + str(self.__aid))
             DicData = json.loads(JsonData)
             ReData = {
                 "error" : 0,
@@ -76,12 +86,13 @@ class BiliAPI:
             ReData = {"error": 1}
         except:
             ReData = {"error": 2}
+        self.__caching['getVideoData'] = ReData
         return ReData
 
     def getVideoTag(self):
         # 获取视频所有Tag
         try:
-            JsonData = self.__getHttpPage("http://api.bilibili.com/x/tag/archive/tags?aid=" + str(self.Aid));
+            JsonData = self.__getHttpPage("http://api.bilibili.com/x/tag/archive/tags?aid=" + str(self.__aid))
             DicData = json.loads(JsonData)['data']
             ReData = {"error": 0}
             for DicData_Key in DicData:
@@ -92,6 +103,7 @@ class BiliAPI:
             ReData = {"error": 2}
         return ReData
 
+class Folder:
     def getFolder(self):
         # 获取收藏夹下所有视频
         try:
@@ -112,6 +124,7 @@ class BiliAPI:
             ReData = {"error": 2}
         return ReData
 
+class Upper:
     def getUpperVideo(self):
         # 获取UP主所有视频
         try:
@@ -203,6 +216,7 @@ class BiliAPI:
         except:
             return {"error": 2}
 
+class Search:
     def getUpperInfo(self):
         # 获取UP主信息
         try:

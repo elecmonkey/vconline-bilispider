@@ -1,22 +1,25 @@
 # -- coding: utf-8 --
 
+import json
+iniFile = open('config.json', encoding = "utf-8")
+iniData = iniFile.read()
+iniFile.close()
+iniJson = json.loads(iniData)
+print(iniJson)
 # Python运行命令
-PYTHON_COMMAND = 'python'
+PYTHON_COMMAND = iniJson['python_command']
 
 # MongoDB数据库地址
-DATABASE_URL = 'mongodb://localhost:27017/'
+DATABASE_URL = iniJson['database']['url']
 # 保存视频信息的数据库
-DATABASE_INDEX = 'vconline'
+DATABASE_INDEX = iniJson['database']['index']
 # 保存爬虫数据的数据库
-DATABASE_DATA = 'vconline_data'
+DATABASE_DATA = iniJson['database']['data']
 # DATABASE_USERNAME = 'admin'
 # DATABASE_PASSWORD = 'admin'
 
 #允许添加的视频TAG
-TAG = ['VOCALOID中文曲', '中文VOCALOID', 'VOCALOID', 'UTAT',
-       '中文UTAU', 'UTAU中文曲', 'SynthV', 'Synthesizer V',
-       'Synth V', 'SynthesizerV', 'Deepvocal', 'Deepvocal中文曲',
-       '中文Deepvocal']
+TAG = iniJson['tag']
 
 # 以下均为未实现功能
 """

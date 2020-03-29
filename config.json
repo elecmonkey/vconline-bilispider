@@ -1,0 +1,12 @@
+{
+    "python_command": "python",
+    "database": {
+        "url": "mongodb://localhost:27017/",
+        "index": "vconline",
+        "data": "vconline_data"
+    },
+    "tag": ["VOCALOID中文曲", "中文VOCALOID", "VOCALOID", "UTAT",
+        "中文UTAU", "UTAU中文曲", "SynthV", "Synthesizer V",
+        "Synth V", "SynthesizerV", "Deepvocal", "Deepvocal中文曲",
+        "中文Deepvocal"]
+}
